@@ -49,4 +49,21 @@ export async function POST(request: Request) {
       error: 'Failed to create order'
     }, { status: 500 });
   }
+  //API TO CREATE AND FETCH ORDERS
+  export async function POST(request: Request) {
+  try {
+    const { customerName, address, items } = await request.json();
+    await connectMongoDB();
+    await Order.create({ customerName, address, items });
+    return NextResponse.json({ message: "Order Created" }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  await connectMongoDB();
+  const orders = await Order.find().sort({ createdAt: -1 });
+  return NextResponse.json({ orders });
+}
 }
